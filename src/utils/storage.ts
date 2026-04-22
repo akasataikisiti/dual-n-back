@@ -10,6 +10,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   matchTypes: { position: true, shape: false, color: false, sound: false },
   trialCount: 20,
   keyBindings: { position: 'a', shape: 's', color: 'd', sound: 'f' },
+  showTimerBar: true,
 };
 
 export function loadSettings(): GameSettings {

@@ -23,6 +23,7 @@ export interface GameSettings {
   matchTypes: MatchConfig;
   trialCount: number;
   keyBindings: KeyBindings;
+  showTimerBar: boolean;
 }
 
 export interface Stimulus {

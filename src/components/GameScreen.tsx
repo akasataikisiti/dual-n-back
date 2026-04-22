@@ -75,15 +75,17 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
         <Board size={settings.boardSize} activeStimulus={currentStimulus} />
       </div>
 
-      <div className="timer-container">
-        <div
-          className={`timer-bar ${phase === 'stimulus' ? 'timer-bar--stimulus' : 'timer-bar--blank'}`}
-          style={{ width: `${phase === 'stimulus' ? stimulusBarWidth : blankBarWidth}%` }}
-        />
-        <div className="timer-labels">
-          <span>{phase === 'stimulus' ? `回答受付中 ${timings.stimulusDuration}ms` : '次の問題まで...'}</span>
+      {settings.showTimerBar && (
+        <div className="timer-container">
+          <div
+            className={`timer-bar ${phase === 'stimulus' ? 'timer-bar--stimulus' : 'timer-bar--blank'}`}
+            style={{ width: `${phase === 'stimulus' ? stimulusBarWidth : blankBarWidth}%` }}
+          />
+          <div className="timer-labels">
+            <span>{phase === 'stimulus' ? `回答受付中 ${timings.stimulusDuration}ms` : '次の問題まで...'}</span>
+          </div>
         </div>
-      </div>
+      )}
 
       <AnswerButtons
         matchTypes={settings.matchTypes}

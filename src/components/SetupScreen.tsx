@@ -164,6 +164,18 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
         </div>
       </section>
 
+      <section className="setup-section">
+        <h3>表示オプション</h3>
+        <label className="match-toggle">
+          <input
+            type="checkbox"
+            checked={s.showTimerBar}
+            onChange={() => setS(prev => ({ ...prev, showTimerBar: !prev.showTimerBar }))}
+          />
+          <span>タイマーバーを表示</span>
+        </label>
+      </section>
+
       <div className="setup-actions">
         <button className="btn-primary btn-start" onClick={handleStart}>
           スタート
