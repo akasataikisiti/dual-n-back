@@ -22,8 +22,8 @@ export function generateStimuli(settings: GameSettings): Stimulus[] {
   const cells = settings.boardSize * settings.boardSize;
   const positions = Array.from({ length: cells }, (_, i) => i);
 
-  // 非アクティブな属性はセッション中固定値にする
-  const fixedShape = settings.matchTypes.shape ? null : pick(SHAPES);
+  // 非アクティブな属性はセッション中固定値にする（形は四角固定）
+  const fixedShape = settings.matchTypes.shape ? null : 'square' as Shape;
   const fixedColor = settings.matchTypes.color ? null : pick(COLORS);
   const fixedSound = settings.matchTypes.sound ? null : pick(SOUNDS);
 

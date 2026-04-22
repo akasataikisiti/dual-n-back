@@ -1,12 +1,12 @@
 import { Shape, Color } from '../types';
 
 const COLOR_MAP: Record<Color, string> = {
-  red: '#E74C3C',
-  blue: '#3498DB',
-  green: '#2ECC71',
-  yellow: '#F1C40F',
-  purple: '#9B59B6',
-  orange: '#E67E22',
+  red:    '#FF2D2D',
+  blue:   '#1A8FFF',
+  green:  '#00DD55',
+  yellow: '#FFE000',
+  purple: '#CC33FF',
+  orange: '#FF7700',
 };
 
 function starPoints(cx: number, cy: number, outerR: number, innerR: number): string {
