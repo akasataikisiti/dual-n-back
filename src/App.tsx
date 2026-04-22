@@ -45,7 +45,7 @@ export function App() {
         <SetupScreen settings={settings} onStart={handleStart} onHistory={handleHistory} />
       )}
       {screen === 'game' && (
-        <GameScreen key={gameKey} settings={settings} onComplete={handleComplete} />
+        <GameScreen key={gameKey} settings={settings} onComplete={handleComplete} onQuit={() => setScreen('setup')} />
       )}
       {screen === 'results' && lastResult && (
         <ResultsScreen

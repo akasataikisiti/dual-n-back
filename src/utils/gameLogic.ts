@@ -8,15 +8,61 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+const MATCH_RATE = 0.3;
+
+function pickDifferent<T>(arr: T[], exclude: T): T {
+  if (arr.length <= 1) return arr[0];
+  let v: T;
+  do { v = pick(arr); } while (v === exclude);
+  return v;
+}
+
 export function generateStimuli(settings: GameSettings): Stimulus[] {
   const total = settings.nLevel + settings.trialCount;
   const cells = settings.boardSize * settings.boardSize;
-  return Array.from({ length: total }, () => ({
-    position: Math.floor(Math.random() * cells),
-    shape: pick(SHAPES),
-    color: pick(COLORS),
-    sound: pick(SOUNDS),
-  }));
+  const positions = Array.from({ length: cells }, (_, i) => i);
+
+  // 非アクティブな属性はセッション中固定値にする
+  const fixedShape = settings.matchTypes.shape ? null : pick(SHAPES);
+  const fixedColor = settings.matchTypes.color ? null : pick(COLORS);
+  const fixedSound = settings.matchTypes.sound ? null : pick(SOUNDS);
+
+  const stimuli: Stimulus[] = [];
+
+  // 最初のnLevel個はランダム生成（比較対象なので制御不要）
+  for (let i = 0; i < settings.nLevel; i++) {
+    stimuli.push({
+      position: Math.floor(Math.random() * cells),
+      shape: fixedShape ?? pick(SHAPES),
+      color: fixedColor ?? pick(COLORS),
+      sound: fixedSound ?? pick(SOUNDS),
+    });
+  }
+
+  // 採点対象の試行：各属性をマッチ率30%で制御
+  for (let i = settings.nLevel; i < total; i++) {
+    const prev = stimuli[i - settings.nLevel];
+
+    const position = settings.matchTypes.position && Math.random() < MATCH_RATE
+      ? prev.position
+      : pickDifferent(positions, prev.position);
+
+    const shape = fixedShape !== null ? fixedShape
+      : Math.random() < MATCH_RATE ? prev.shape
+      : pickDifferent(SHAPES, prev.shape);
+
+    const color = fixedColor !== null ? fixedColor
+      : Math.random() < MATCH_RATE ? prev.color
+      : pickDifferent(COLORS, prev.color);
+
+    const sound = fixedSound !== null ? fixedSound
+      : Math.random() < MATCH_RATE ? prev.sound
+      : pickDifferent(SOUNDS, prev.sound);
+
+    stimuli.push({ position, shape, color, sound });
+  }
+
+  return stimuli;
 }
 
 export function checkMatches(

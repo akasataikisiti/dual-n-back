@@ -281,6 +281,36 @@ body {
 .game-nlevel { color: var(--accent); font-weight: 700; }
 .game-score { font-weight: 700; font-size: 1.05rem; }
 
+.quit-btn {
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.quit-btn:hover { border-color: var(--false-alarm); color: var(--false-alarm); }
+
+.quit-confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.quit-yes, .quit-no {
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+.quit-yes { background: var(--false-alarm); border-color: var(--false-alarm); color: #fff; }
+.quit-no  { background: transparent; color: var(--text); }
+.quit-no:hover { border-color: var(--accent); }
+
 .board-area {
   display: flex;
   justify-content: center;
