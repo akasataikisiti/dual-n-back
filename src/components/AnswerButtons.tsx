@@ -37,7 +37,7 @@ export function AnswerButtons({ matchTypes, userAnswered, feedback, keyBindings,
             key={t}
             className={`answer-btn ${fbClass} ${pressed ? 'answer-btn--pressed' : ''}`}
             onClick={() => onRespond(t)}
-            disabled={disabled || pressed}
+            disabled={disabled}
             title={keyBindings[t].toUpperCase()}
           >
             <span className="answer-btn__label">{LABELS[t]}</span>

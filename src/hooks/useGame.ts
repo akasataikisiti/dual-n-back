@@ -36,7 +36,7 @@ function reducer(state: GameState, action: Action): GameState {
       };
     case 'RESPOND':
       if (state.phase !== 'stimulus') return state;
-      return { ...state, userAnswered: { ...state.userAnswered, [action.matchType]: true } };
+      return { ...state, userAnswered: { ...state.userAnswered, [action.matchType]: !state.userAnswered[action.matchType] } };
     case 'TO_BLANK':
       return {
         ...state,
