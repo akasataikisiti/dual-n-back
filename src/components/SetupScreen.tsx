@@ -39,10 +39,14 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
       e.preventDefault();
       const key = e.key.toLowerCase();
       if (key.length !== 1) return;
-      setS(prev => ({
-        ...prev,
-        keyBindings: { ...prev.keyBindings, [t]: key },
-      }));
+      setS(prev => {
+        const conflict = (Object.keys(prev.keyBindings) as MatchType[]).find(
+          k => k !== t && prev.keyBindings[k] === key
+        );
+        const newBindings = { ...prev.keyBindings, [t]: key };
+        if (conflict) newBindings[conflict] = prev.keyBindings[t];
+        return { ...prev, keyBindings: newBindings };
+      });
       setCapturingKey(null);
     };
     window.addEventListener('keydown', handler);
