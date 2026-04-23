@@ -574,6 +574,32 @@ body {
   margin-top: 3px;
 }
 
+/* ── Condition Tabs ── */
+.condition-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.condition-tab {
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.condition-tab:hover { border-color: var(--accent); color: var(--text); }
+
+.condition-tab--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
 /* ── Score Chart ── */
 .chart-section {
   background: var(--surface);

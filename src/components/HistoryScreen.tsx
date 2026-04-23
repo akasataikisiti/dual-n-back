@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { SessionResult, MatchType } from '../types';
 
 const LABELS: Record<MatchType, string> = {
@@ -70,6 +71,10 @@ function ScoreChart({ data }: { data: SessionResult[] }) {
   );
 }
 
+function conditionKey(r: SessionResult): string {
+  return `${r.nLevel}-back ${r.activeMatchTypes.map(t => LABELS[t]).join('・')}`;
+}
+
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
     <div className="stat-card">
@@ -81,8 +86,16 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
 }
 
 export function HistoryScreen({ history, onBack }: Props) {
+  const [selectedCondition, setSelectedCondition] = useState<string>('all');
+
   const chronological = [...history].reverse();
-  const chartData = chronological.slice(-20);
+
+  const conditions = Array.from(new Set(history.map(conditionKey)));
+
+  const filteredChronological = selectedCondition === 'all'
+    ? chronological
+    : chronological.filter(r => conditionKey(r) === selectedCondition);
+  const chartData = filteredChronological.slice(-20);
 
   const totalSessions = history.length;
   const bestScore = totalSessions > 0 ? Math.max(...history.map(r => r.score)) : 0;
@@ -113,6 +126,26 @@ export function HistoryScreen({ history, onBack }: Props) {
             <StatCard label="最高スコア" value={bestScore} />
             <StatCard label="直近の平均" value={recentAvg} sub={`直近${recent.length}回`} />
           </div>
+
+          {conditions.length >= 2 && (
+            <div className="condition-tabs">
+              <button
+                className={`condition-tab ${selectedCondition === 'all' ? 'condition-tab--active' : ''}`}
+                onClick={() => setSelectedCondition('all')}
+              >
+                すべて
+              </button>
+              {conditions.map(c => (
+                <button
+                  key={c}
+                  className={`condition-tab ${selectedCondition === c ? 'condition-tab--active' : ''}`}
+                  onClick={() => setSelectedCondition(c)}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
 
           {chartData.length >= 2 && (
             <div className="chart-section">
