@@ -104,6 +104,13 @@ npm run preview  # ビルド結果をローカルで確認
 
 このプロジェクトでは、本番ビルド時に `VITE_GA_MEASUREMENT_ID` が設定されている場合だけ Google Analytics を読み込みます。Secret 未設定時は計測コードは動作しません。
 
+現在は以下の独自イベントを送信します。
+
+- `game_started`: セッション開始時の設定値
+- `game_completed`: セッション完了時のスコアと正誤集計
+- `game_quit`: セッション中断時の設定値
+- `history_opened`: 履歴画面を開いた操作元
+
 ---
 
 ## プロジェクト構成

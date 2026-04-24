@@ -1,4 +1,7 @@
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim();
+type AnalyticsParamValue = string | number | boolean | undefined;
+
+type AnalyticsParams = Record<string, AnalyticsParamValue>;
 
 declare global {
   interface Window {
@@ -35,4 +38,15 @@ export function initializeAnalytics(): void {
     anonymize_ip: true,
     page_path: window.location.pathname + window.location.search,
   });
+}
+
+export function trackEvent(eventName: string, params: AnalyticsParams = {}): void {
+  if (!import.meta.env.PROD || !window.gtag) {
+    return;
+  }
+
+  const filteredParams = Object.fromEntries(
+    Object.entries(params).filter(([, value]) => value !== undefined)
+  );
+  window.gtag('event', eventName, filteredParams);
 }
