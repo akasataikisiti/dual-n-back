@@ -95,6 +95,15 @@ npm run preview  # ビルド結果をローカルで確認
 
 初回のみ、リポジトリの **Settings → Pages → Source** を `GitHub Actions` に設定する必要があります。
 
+### Google Analytics 4 を有効化する
+
+1. Google Analytics で Web データストリームを作成し、測定 ID (`G-XXXXXXXXXX`) を取得する
+2. GitHub リポジトリの **Settings → Secrets and variables → Actions** で `GA_MEASUREMENT_ID` という Secret を作成する
+3. 値に取得した測定 ID を設定する
+4. `main` ブランチへ push して GitHub Pages を再デプロイする
+
+このプロジェクトでは、本番ビルド時に `VITE_GA_MEASUREMENT_ID` が設定されている場合だけ Google Analytics を読み込みます。Secret 未設定時は計測コードは動作しません。
+
 ---
 
 ## プロジェクト構成
