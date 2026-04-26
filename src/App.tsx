@@ -74,6 +74,7 @@ export function App() {
       n_level: s.nLevel,
       board_size: s.boardSize,
       trial_count: s.trialCount,
+      response_window_offset_ms: s.responseWindowOffsetMs,
       active_match_types: Object.entries(s.matchTypes)
         .filter(([, enabled]) => enabled)
         .map(([type]) => type)
@@ -121,6 +122,7 @@ export function App() {
       n_level: settings.nLevel,
       board_size: settings.boardSize,
       trial_count: settings.trialCount,
+      response_window_offset_ms: settings.responseWindowOffsetMs,
       active_match_types: Object.entries(settings.matchTypes)
         .filter(([, enabled]) => enabled)
         .map(([type]) => type)

@@ -30,7 +30,7 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
   capturingRef.current = capturingKey;
 
   const activeTypes = getActiveTypes(s.matchTypes);
-  const timings = getTimings(activeTypes.length);
+  const timings = getTimings(activeTypes.length, s.responseWindowOffsetMs);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -59,6 +59,10 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
 
   function setTrialCount(v: number) {
     setS(prev => ({ ...prev, trialCount: Math.max(5, Math.min(100, v)) }));
+  }
+
+  function setResponseWindowOffset(v: number) {
+    setS(prev => ({ ...prev, responseWindowOffsetMs: Math.max(-300, Math.min(2000, v)) }));
   }
 
   function setBoardSize(v: BoardSize) {
@@ -143,6 +147,25 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
       </section>
 
       <section className="setup-section">
+        <h3>回答受付時間の調整</h3>
+        <div className="response-window-control">
+          <input
+            type="range"
+            min={-300}
+            max={2000}
+            step={100}
+            value={s.responseWindowOffsetMs}
+            onChange={e => setResponseWindowOffset(parseInt(e.target.value, 10))}
+            className="response-window-slider"
+          />
+          <div className="response-window-meta">
+            <strong>{s.responseWindowOffsetMs >= 0 ? `+${s.responseWindowOffsetMs}` : s.responseWindowOffsetMs}ms</strong>
+            <span>自動計算された回答受付時間に加算します</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="setup-section">
         <h3>キーバインド</h3>
         <div className="keybind-list">
           {MATCH_TYPES.filter(({ key }) => s.matchTypes[key]).map(({ key }) => (
@@ -162,7 +185,7 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
       <section className="setup-section setup-section--timing">
         <h3>タイミング（自動計算）</h3>
         <div className="timing-info">
-          <span>刺激表示: {(timings.stimulusDuration / 1000).toFixed(1)}s</span>
+          <span>回答受付: {(timings.stimulusDuration / 1000).toFixed(1)}s</span>
           <span>インターバル: {(timings.blankDuration / 1000).toFixed(1)}s</span>
           <span>1試行: {((timings.stimulusDuration + timings.blankDuration) / 1000).toFixed(1)}s</span>
         </div>

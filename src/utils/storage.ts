@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   boardSize: 3 as BoardSize,
   matchTypes: { position: true, shape: false, color: false, sound: false },
   trialCount: 20,
+  responseWindowOffsetMs: 0,
   keyBindings: { position: 'a', shape: 's', color: 'd', sound: 'f' },
   showTimerBar: true,
 };

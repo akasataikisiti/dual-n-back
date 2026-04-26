@@ -22,6 +22,7 @@ export interface GameSettings {
   boardSize: BoardSize;
   matchTypes: MatchConfig;
   trialCount: number;
+  responseWindowOffsetMs: number;
   keyBindings: KeyBindings;
   showTimerBar: boolean;
 }

@@ -20,7 +20,7 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
   const [confirming, setConfirming] = useState(false);
 
   const activeCount = getActiveTypes(settings.matchTypes).length;
-  const timings = getTimings(activeCount);
+  const timings = getTimings(activeCount, settings.responseWindowOffsetMs);
 
   useEffect(() => {
     start();
@@ -82,7 +82,7 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
             style={{ width: `${phase === 'stimulus' ? stimulusBarWidth : blankBarWidth}%` }}
           />
           <div className="timer-labels">
-            <span>{phase === 'stimulus' ? `回答受付中 ${timings.stimulusDuration}ms` : '次の問題まで...'}</span>
+            <span>{phase === 'stimulus' ? `回答受付中 ${timings.stimulusDuration}ms` : `次の問題まで ${timings.blankDuration}ms`}</span>
           </div>
         </div>
       )}

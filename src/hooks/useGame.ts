@@ -150,7 +150,10 @@ export function useGame(
     }
     if (state.stimuli.length === 0) return;
 
-    const timings = getTimings(getActiveTypes(settingsRef.current.matchTypes).length);
+    const timings = getTimings(
+      getActiveTypes(settingsRef.current.matchTypes).length,
+      settingsRef.current.responseWindowOffsetMs
+    );
     const duration = state.phase === 'stimulus' ? timings.stimulusDuration : timings.blankDuration;
     const start = performance.now();
     let rafId: number;
@@ -206,4 +209,3 @@ export function useGame(
     respond,
   };
 }
-
