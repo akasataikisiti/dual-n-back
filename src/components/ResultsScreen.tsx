@@ -34,16 +34,44 @@ function calcStats(result: SessionResult): Partial<Record<MatchType, TypeStats>>
 
 interface Props {
   result: SessionResult;
+  recordCelebration: {
+    isNewRecord: boolean;
+    previousBest: number | null;
+  };
   onPlayAgain: () => void;
   onSettings: () => void;
   onHistory: () => void;
 }
 
-export function ResultsScreen({ result, onPlayAgain, onSettings, onHistory }: Props) {
+const CONFETTI_ITEMS = Array.from({ length: 18 }, (_, index) => index);
+
+export function ResultsScreen({ result, recordCelebration, onPlayAgain, onSettings, onHistory }: Props) {
   const stats = calcStats(result);
 
   return (
     <div className="results-screen">
+      {recordCelebration.isNewRecord && (
+        <>
+          <div className="results-confetti" aria-hidden="true">
+            {CONFETTI_ITEMS.map(item => (
+              <span key={item} className={`confetti-piece confetti-piece--${(item % 6) + 1}`} />
+            ))}
+          </div>
+          <div className="results-celebration" role="status" aria-live="polite">
+            <span className="results-celebration__eyebrow">NEW RECORD</span>
+            <strong>記録更新おめでとう！</strong>
+            <span>
+              このモードの自己ベストを
+              {' '}
+              {recordCelebration.previousBest}
+              {' '}
+              → {result.score}
+              に更新しました。
+            </span>
+          </div>
+        </>
+      )}
+
       <h2 className="results-title">セッション終了</h2>
 
       <div className="results-summary">

@@ -9,6 +9,11 @@ import { trackEvent } from './utils/analytics';
 
 type Screen = 'setup' | 'game' | 'results' | 'history';
 
+interface RecordCelebration {
+  isNewRecord: boolean;
+  previousBest: number | null;
+}
+
 function countFeedback(result: SessionResult) {
   let hits = 0;
   let misses = 0;
@@ -26,12 +31,41 @@ function countFeedback(result: SessionResult) {
   return { hits, misses, falseAlarms };
 }
 
+function modeKey(result: SessionResult) {
+  return [
+    result.nLevel,
+    result.boardSize,
+    result.trialCount,
+    result.activeMatchTypes.join(','),
+  ].join('|');
+}
+
+function getRecordCelebration(result: SessionResult, history: SessionResult[]): RecordCelebration {
+  const sameModeScores = history
+    .filter(item => modeKey(item) === modeKey(result))
+    .map(item => item.score);
+
+  if (sameModeScores.length === 0) {
+    return { isNewRecord: false, previousBest: null };
+  }
+
+  const previousBest = Math.max(...sameModeScores);
+  return {
+    isNewRecord: result.score > previousBest,
+    previousBest,
+  };
+}
+
 export function App() {
   const [screen, setScreen] = useState<Screen>('setup');
   const [settings, setSettings] = useState<GameSettings>(loadSettings);
   const [lastResult, setLastResult] = useState<SessionResult | null>(null);
   const [history, setHistory] = useState(loadHistory);
   const [gameKey, setGameKey] = useState(0);
+  const [recordCelebration, setRecordCelebration] = useState<RecordCelebration>({
+    isNewRecord: false,
+    previousBest: null,
+  });
 
   const handleStart = useCallback((s: GameSettings) => {
     setSettings(s);
@@ -52,9 +86,12 @@ export function App() {
 
   const handleComplete = useCallback((result: SessionResult) => {
     const { hits, misses, falseAlarms } = countFeedback(result);
+    const existingHistory = loadHistory();
+    const celebration = getRecordCelebration(result, existingHistory);
     appendHistory(result);
     setLastResult(result);
     setHistory(loadHistory());
+    setRecordCelebration(celebration);
     trackEvent('game_completed', {
       n_level: result.nLevel,
       board_size: result.boardSize,
@@ -103,6 +140,7 @@ export function App() {
       {screen === 'results' && lastResult && (
         <ResultsScreen
           result={lastResult}
+          recordCelebration={recordCelebration}
           onPlayAgain={handlePlayAgain}
           onSettings={() => setScreen('setup')}
           onHistory={handleHistory}
