@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { GameSettings, SessionResult } from './types';
-import { loadSettings, saveSettings, loadHistory, appendHistory } from './utils/storage';
+import { loadSettings, saveSettings, loadHistory, appendHistory, clearHistory } from './utils/storage';
 import { SetupScreen } from './components/SetupScreen';
 import { GameScreen } from './components/GameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
@@ -117,6 +117,12 @@ export function App() {
     setScreen('history');
   }, [screen]);
 
+  const handleClearHistory = useCallback(() => {
+    clearHistory();
+    setHistory([]);
+    trackEvent('history_cleared', { source_screen: screen });
+  }, [screen]);
+
   const handleQuit = useCallback(() => {
     trackEvent('game_quit', {
       n_level: settings.nLevel,
@@ -149,7 +155,7 @@ export function App() {
         />
       )}
       {screen === 'history' && (
-        <HistoryScreen history={history} onBack={() => setScreen('setup')} />
+        <HistoryScreen history={history} onBack={() => setScreen('setup')} onClearHistory={handleClearHistory} />
       )}
     </div>
   );

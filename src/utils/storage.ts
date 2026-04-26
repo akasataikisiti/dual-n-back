@@ -44,3 +44,7 @@ export function appendHistory(result: SessionResult): void {
   if (history.length > MAX_HISTORY) history.splice(MAX_HISTORY);
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }
+
+export function clearHistory(): void {
+  localStorage.removeItem(HISTORY_KEY);
+}

@@ -15,6 +15,7 @@ function nlevelColor(n: number) {
 interface Props {
   history: SessionResult[];
   onBack: () => void;
+  onClearHistory: () => void;
 }
 
 function formatDate(ts: number): string {
@@ -85,8 +86,9 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
   );
 }
 
-export function HistoryScreen({ history, onBack }: Props) {
+export function HistoryScreen({ history, onBack, onClearHistory }: Props) {
   const [selectedCondition, setSelectedCondition] = useState<string>('all');
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   const chronological = [...history].reverse();
 
@@ -114,7 +116,31 @@ export function HistoryScreen({ history, onBack }: Props) {
     <div className="history-screen">
       <div className="history-header">
         <h2>成長記録</h2>
-        <button className="btn-secondary" onClick={onBack}>戻る</button>
+        <div className="history-header-actions">
+          {history.length > 0 && (
+            confirmingClear ? (
+              <span className="history-clear-confirm">
+                本当に消去しますか？
+                <button
+                  className="btn-danger"
+                  onClick={() => {
+                    onClearHistory();
+                    setConfirmingClear(false);
+                    setSelectedCondition('all');
+                  }}
+                >
+                  消去する
+                </button>
+                <button className="btn-secondary" onClick={() => setConfirmingClear(false)}>キャンセル</button>
+              </span>
+            ) : (
+              <button className="btn-ghost btn-danger-ghost" onClick={() => setConfirmingClear(true)}>
+                履歴を消去
+              </button>
+            )
+          )}
+          <button className="btn-secondary" onClick={onBack}>戻る</button>
+        </div>
       </div>
 
       {history.length === 0 ? (
