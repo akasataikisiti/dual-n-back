@@ -43,7 +43,7 @@ interface Props {
   onHistory: () => void;
 }
 
-const CONFETTI_ITEMS = Array.from({ length: 18 }, (_, index) => index);
+const CONFETTI_ITEMS = Array.from({ length: 30 }, (_, index) => index);
 
 export function ResultsScreen({ result, recordCelebration, onPlayAgain, onSettings, onHistory }: Props) {
   const stats = calcStats(result);
