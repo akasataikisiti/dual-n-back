@@ -7,7 +7,7 @@ type Phase = 'stimulus' | 'blank' | 'done';
 
 interface GameState {
   phase: Phase;
-  trialIndex: number;
+  stimulusIndex: number;
   stimuli: Stimulus[];
   userAnswered: MatchConfig;
   results: TrialRecord[];
@@ -17,7 +17,7 @@ interface GameState {
 
 type Action =
   | { type: 'START'; stimuli: Stimulus[] }
-  | { type: 'TO_BLANK'; record: TrialRecord; scoreGain: number; feedback: FeedbackMap }
+  | { type: 'TO_BLANK'; record?: TrialRecord; scoreGain: number; feedback: FeedbackMap | null }
   | { type: 'TO_STIMULUS' }
   | { type: 'RESPOND'; matchType: MatchType }
   | { type: 'DONE' };
@@ -27,7 +27,7 @@ function reducer(state: GameState, action: Action): GameState {
     case 'START':
       return {
         phase: 'stimulus',
-        trialIndex: 0,
+        stimulusIndex: 0,
         stimuli: action.stimuli,
         userAnswered: emptyMatch(),
         results: [],
@@ -43,13 +43,13 @@ function reducer(state: GameState, action: Action): GameState {
         phase: 'blank',
         feedback: action.feedback,
         score: state.score + action.scoreGain,
-        results: [...state.results, action.record],
+        results: action.record ? [...state.results, action.record] : state.results,
       };
     case 'TO_STIMULUS':
       return {
         ...state,
         phase: 'stimulus',
-        trialIndex: state.trialIndex + 1,
+        stimulusIndex: state.stimulusIndex + 1,
         userAnswered: emptyMatch(),
         feedback: null,
       };
@@ -62,7 +62,7 @@ function reducer(state: GameState, action: Action): GameState {
 
 const initialState: GameState = {
   phase: 'stimulus',
-  trialIndex: 0,
+  stimulusIndex: 0,
   stimuli: [],
   userAnswered: emptyMatch(),
   results: [],
@@ -91,7 +91,12 @@ export function useGame(
     const cfg = settingsRef.current;
 
     if (s.phase === 'stimulus') {
-      const stimIdx = cfg.nLevel + s.trialIndex;
+      const stimIdx = s.stimulusIndex;
+      if (stimIdx < cfg.nLevel) {
+        dispatch({ type: 'TO_BLANK', scoreGain: 0, feedback: null });
+        return;
+      }
+
       const shouldMatch = checkMatches(s.stimuli, stimIdx, cfg.nLevel, cfg.matchTypes);
       const activeTypes = getActiveTypes(cfg.matchTypes);
       const feedback: FeedbackMap = {};
@@ -108,7 +113,7 @@ export function useGame(
 
       const scoreGain = hits * 10 * cfg.nLevel * activeTypes.length;
       const record: TrialRecord = {
-        trialIndex: s.trialIndex,
+        trialIndex: stimIdx - cfg.nLevel,
         stimulus: s.stimuli[stimIdx],
         shouldMatch,
         userAnswered: s.userAnswered,
@@ -118,15 +123,14 @@ export function useGame(
       dispatch({ type: 'TO_BLANK', record, scoreGain, feedback });
 
     } else if (s.phase === 'blank') {
-      const nextTrial = s.trialIndex + 1;
-      if (nextTrial >= cfg.trialCount) {
+      const nextStimulusIndex = s.stimulusIndex + 1;
+      if (nextStimulusIndex >= s.stimuli.length) {
         dispatch({ type: 'DONE' });
       } else {
         dispatch({ type: 'TO_STIMULUS' });
-        const nextStimIdx = cfg.nLevel + nextTrial;
         audioRef.current.playTileChange();
         if (cfg.matchTypes.sound) {
-          audioRef.current.speakLetter(s.stimuli[nextStimIdx].sound);
+          audioRef.current.speakLetter(s.stimuli[nextStimulusIndex].sound);
         }
       }
     }
@@ -176,14 +180,14 @@ export function useGame(
       ended = true;
       cancelAnimationFrame(rafId);
     };
-  }, [state.phase, state.trialIndex, state.stimuli.length]);
+  }, [state.phase, state.stimulusIndex, state.stimuli.length]);
 
   const start = useCallback(() => {
     const stimuli = generateStimuli(settings);
     dispatch({ type: 'START', stimuli });
     audioRef.current.playTileChange();
     if (settings.matchTypes.sound) {
-      audioRef.current.speakLetter(stimuli[settings.nLevel].sound);
+      audioRef.current.speakLetter(stimuli[0].sound);
     }
   }, [settings]);
 
@@ -193,12 +197,14 @@ export function useGame(
 
   const currentStimulus =
     state.stimuli.length > 0 && state.phase !== 'done'
-      ? state.stimuli[settings.nLevel + state.trialIndex]
+      ? state.stimuli[state.stimulusIndex]
       : null;
 
   return {
     phase: state.phase,
-    trialIndex: state.trialIndex,
+    trialIndex: Math.max(0, state.stimulusIndex - settings.nLevel),
+    stimulusIndex: state.stimulusIndex,
+    isWarmup: state.stimulusIndex < settings.nLevel,
     currentStimulus: state.phase === 'stimulus' ? currentStimulus : null,
     userAnswered: state.userAnswered,
     results: state.results,

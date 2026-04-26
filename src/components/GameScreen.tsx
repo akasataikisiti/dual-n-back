@@ -15,9 +15,10 @@ interface Props {
 
 export function GameScreen({ settings, onComplete, onQuit }: Props) {
   const audio = useAudio();
-  const { phase, trialIndex, currentStimulus, userAnswered, score, feedback, progress, start, respond } =
+  const { phase, trialIndex, stimulusIndex, isWarmup, currentStimulus, userAnswered, score, feedback, progress, start, respond } =
     useGame(settings, audio, onComplete);
   const [confirming, setConfirming] = useState(false);
+  const canAnswer = phase === 'stimulus' && !isWarmup;
 
   const activeCount = getActiveTypes(settings.matchTypes).length;
   const timings = getTimings(activeCount, settings.responseWindowOffsetMs);
@@ -27,7 +28,7 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
   }, []);
 
   const handleKey = useCallback((e: KeyboardEvent) => {
-    if (phase !== 'stimulus') return;
+    if (!canAnswer) return;
     const kb = settings.keyBindings;
     const key = e.key.toLowerCase();
     const map: [string, MatchType][] = [
@@ -42,7 +43,7 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
         break;
       }
     }
-  }, [phase, settings, respond]);
+  }, [canAnswer, settings, respond]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKey);
@@ -56,7 +57,7 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
     <div className="game-screen">
       <div className="game-header">
         <span className="game-trial">
-          {trialIndex + 1} / {settings.trialCount} 問
+          {isWarmup ? `準備 ${stimulusIndex + 1} / ${settings.nLevel}` : `${trialIndex + 1} / ${settings.trialCount} 問`}
         </span>
         <span className="game-nlevel">{settings.nLevel}-back</span>
         <span className="game-score">スコア: {score}</span>
@@ -82,7 +83,13 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
             style={{ width: `${phase === 'stimulus' ? stimulusBarWidth : blankBarWidth}%` }}
           />
           <div className="timer-labels">
-            <span>{phase === 'stimulus' ? `回答受付中 ${timings.stimulusDuration}ms` : `次の問題まで ${timings.blankDuration}ms`}</span>
+            <span>
+              {phase === 'stimulus'
+                ? isWarmup
+                  ? `記憶フェーズ ${timings.stimulusDuration}ms`
+                  : `回答受付中 ${timings.stimulusDuration}ms`
+                : `次の問題まで ${timings.blankDuration}ms`}
+            </span>
           </div>
         </div>
       )}
@@ -93,7 +100,7 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
         feedback={feedback}
         keyBindings={settings.keyBindings}
         onRespond={respond}
-        disabled={phase !== 'stimulus'}
+        disabled={!canAnswer}
       />
     </div>
   );
