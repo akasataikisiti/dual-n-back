@@ -26,17 +26,18 @@ export function initializeAnalytics(): void {
     return;
   }
 
-  loadGoogleAnalyticsScript(GA_MEASUREMENT_ID);
-
   window.dataLayer = window.dataLayer || [];
-  window.gtag = (...args: unknown[]) => {
-    window.dataLayer.push(args);
+  window.gtag = function gtag() {
+    window.dataLayer.push(arguments);
   };
+
+  loadGoogleAnalyticsScript(GA_MEASUREMENT_ID);
 
   window.gtag('js', new Date());
   window.gtag('config', GA_MEASUREMENT_ID, {
     anonymize_ip: true,
     page_path: window.location.pathname + window.location.search,
+    page_location: window.location.href,
   });
 }
 
