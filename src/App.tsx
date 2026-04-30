@@ -1,11 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GameSettings, SessionResult } from './types';
 import { loadSettings, saveSettings, loadHistory, appendHistory, clearHistory } from './utils/storage';
 import { SetupScreen } from './components/SetupScreen';
 import { GameScreen } from './components/GameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { HistoryScreen } from './components/HistoryScreen';
-import { trackEvent } from './utils/analytics';
+import { trackEvent, trackScreenView } from './utils/analytics';
 
 type Screen = 'setup' | 'game' | 'results' | 'history';
 
@@ -66,6 +66,10 @@ export function App() {
     isNewRecord: false,
     previousBest: null,
   });
+
+  useEffect(() => {
+    trackScreenView(screen);
+  }, [screen]);
 
   const handleStart = useCallback((s: GameSettings) => {
     setSettings(s);

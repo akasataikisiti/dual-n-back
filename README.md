@@ -106,10 +106,12 @@ npm run preview  # ビルド結果をローカルで確認
 
 現在は以下の独自イベントを送信します。
 
+- `screen_view`: 画面表示（設定・ゲーム・結果・履歴）
 - `game_started`: セッション開始時の設定値
 - `game_completed`: セッション完了時のスコアと正誤集計
 - `game_quit`: セッション中断時の設定値
 - `history_opened`: 履歴画面を開いた操作元
+- `history_cleared`: 履歴を削除した操作元
 
 ---
 

@@ -50,3 +50,10 @@ export function trackEvent(eventName: string, params: AnalyticsParams = {}): voi
   );
   window.gtag('event', eventName, filteredParams);
 }
+
+export function trackScreenView(screenName: string): void {
+  trackEvent('screen_view', {
+    app_name: 'dual-n-back',
+    screen_name: screenName,
+  });
+}
