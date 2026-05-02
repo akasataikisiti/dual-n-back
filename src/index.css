@@ -145,6 +145,12 @@ body {
 .match-toggle--fixed { opacity: 0.8; }
 .badge { font-size: 0.65rem; background: var(--accent); color: #fff; padding: 1px 5px; border-radius: 4px; }
 
+.mode-desc {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 /* Trial count */
 .trial-count-control {
   display: flex;
@@ -334,9 +340,10 @@ body {
   font-size: 0.9rem;
 }
 
-.game-trial { color: var(--text-muted); }
+.game-trial { color: var(--text-muted); display: flex; flex-direction: column; gap: 1px; }
 .game-nlevel { color: var(--accent); font-weight: 700; }
 .game-score { font-weight: 700; font-size: 1.05rem; }
+.game-errors { font-size: 0.72rem; color: var(--false-alarm); font-weight: 600; }
 
 .quit-btn {
   padding: 4px 10px;
@@ -630,6 +637,27 @@ body {
 
 .results-actions .btn-primary { flex: 1.5; }
 .results-actions .btn-secondary { flex: 1; }
+
+.btn-tweet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  background: #000;
+  border: 1px solid #444;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  flex: 1;
+}
+.btn-tweet:hover { background: #1a1a1a; border-color: #888; }
+
+.results-mode--unlimited { color: var(--false-alarm); font-size: 1rem; }
+.results-mode--normal { color: var(--text); }
 
 @media (max-width: 560px) {
   .results-summary {

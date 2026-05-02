@@ -73,7 +73,8 @@ function ScoreChart({ data }: { data: SessionResult[] }) {
 }
 
 function conditionKey(r: SessionResult): string {
-  return `${r.nLevel}-back ${r.activeMatchTypes.map(t => LABELS[t]).join('・')}`;
+  const modeSuffix = r.mode === 'unlimited' ? ' ∞' : '';
+  return `${r.nLevel}-back ${r.activeMatchTypes.map(t => LABELS[t]).join('・')}${modeSuffix}`;
 }
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
@@ -214,7 +215,7 @@ export function HistoryScreen({ history, onBack, onClearHistory }: Props) {
                     <td style={{ color: nlevelColor(r.nLevel), fontWeight: 700 }}>{r.nLevel}</td>
                     <td>{r.boardSize}×{r.boardSize}</td>
                     <td>{r.activeMatchTypes.map(t => LABELS[t]).join('・')}</td>
-                    <td>{r.trialCount}</td>
+                    <td>{r.trialCount}{r.mode === 'unlimited' && ' ∞'}</td>
                     <td className="td-score">{r.score}</td>
                   </tr>
                 ))}

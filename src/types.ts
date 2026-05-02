@@ -2,6 +2,7 @@ export type BoardSize = 3 | 4 | 5;
 export type Shape = 'circle' | 'triangle' | 'square' | 'star';
 export type Color = 'red' | 'blue' | 'green' | 'yellow' | 'purple' | 'orange';
 export type MatchType = 'position' | 'shape' | 'color' | 'sound';
+export type GameMode = 'normal' | 'unlimited';
 
 export interface MatchConfig {
   position: boolean;
@@ -25,6 +26,7 @@ export interface GameSettings {
   responseWindowOffsetMs: number;
   keyBindings: KeyBindings;
   showTimerBar: boolean;
+  mode: GameMode;
 }
 
 export interface Stimulus {
@@ -55,4 +57,5 @@ export interface SessionResult {
   trialCount: number;
   score: number;
   records: TrialRecord[];
+  mode?: GameMode;
 }

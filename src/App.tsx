@@ -32,12 +32,8 @@ function countFeedback(result: SessionResult) {
 }
 
 function modeKey(result: SessionResult) {
-  return [
-    result.nLevel,
-    result.boardSize,
-    result.trialCount,
-    result.activeMatchTypes.join(','),
-  ].join('|');
+  const base = [result.nLevel, result.boardSize, result.activeMatchTypes.join(','), result.mode ?? 'normal'].join('|');
+  return result.mode === 'unlimited' ? base : base + '|' + result.trialCount;
 }
 
 function getRecordCelebration(result: SessionResult, history: SessionResult[]): RecordCelebration {

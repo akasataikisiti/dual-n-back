@@ -32,6 +32,14 @@ function calcStats(result: SessionResult): Partial<Record<MatchType, TypeStats>>
   return stats;
 }
 
+function buildTweetUrl(result: SessionResult): string {
+  const isUnlimited = result.mode === 'unlimited';
+  const modeLabel = isUnlimited ? 'アンリミット' : '通常';
+  const trialLabel = isUnlimited ? `${result.trialCount}問クリア` : `${result.trialCount}問`;
+  const text = `Dual N-Back ${modeLabel} ${result.nLevel}-back ${trialLabel}！スコア: ${result.score} #DualNBack`;
+  return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+}
+
 interface Props {
   result: SessionResult;
   recordCelebration: {
@@ -72,15 +80,23 @@ export function ResultsScreen({ result, recordCelebration, onPlayAgain, onSettin
         </>
       )}
 
-      <h2 className="results-title">セッション終了</h2>
+      <h2 className="results-title">
+        {result.mode === 'unlimited' ? 'ゲームオーバー' : 'セッション終了'}
+      </h2>
 
       <div className="results-summary">
+        <div className="results-item">
+          <span className="results-label">モード</span>
+          <span className={`results-value results-mode--${result.mode ?? 'normal'}`}>
+            {result.mode === 'unlimited' ? 'アンリミット' : '通常'}
+          </span>
+        </div>
         <div className="results-item">
           <span className="results-label">N-back</span>
           <span className="results-value">{result.nLevel}</span>
         </div>
         <div className="results-item">
-          <span className="results-label">問題数</span>
+          <span className="results-label">{result.mode === 'unlimited' ? 'クリア問数' : '問題数'}</span>
           <span className="results-value">{result.trialCount}</span>
         </div>
         <div className="results-item results-item--score">
@@ -120,6 +136,14 @@ export function ResultsScreen({ result, recordCelebration, onPlayAgain, onSettin
         <button className="btn-primary" onClick={onPlayAgain}>もう一度</button>
         <button className="btn-secondary" onClick={onSettings}>設定に戻る</button>
         <button className="btn-secondary" onClick={onHistory}>履歴</button>
+        <a
+          className="btn-tweet"
+          href={buildTweetUrl(result)}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          X でシェア
+        </a>
       </div>
     </div>
   );

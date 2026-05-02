@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { GameSettings, BoardSize, MatchType, KeyBindings } from '../types';
+import { GameSettings, GameMode, BoardSize, MatchType, KeyBindings } from '../types';
 import { getActiveTypes } from '../utils/gameLogic';
 import { getTimings } from '../utils/timing';
 
@@ -91,6 +91,24 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
       <h1 className="setup-title">Dual N-Back</h1>
 
       <section className="setup-section">
+        <h3>モード</h3>
+        <div className="board-size-options">
+          {(['normal', 'unlimited'] as GameMode[]).map(m => (
+            <button
+              key={m}
+              className={`size-btn ${s.mode === m ? 'size-btn--active' : ''}`}
+              onClick={() => setS(prev => ({ ...prev, mode: m }))}
+            >
+              {m === 'normal' ? '通常' : 'アンリミット'}
+            </button>
+          ))}
+        </div>
+        {s.mode === 'unlimited' && (
+          <p className="mode-desc">ミス・誤答が合計5回で終了。何問まで続けられるか挑戦！</p>
+        )}
+      </section>
+
+      <section className="setup-section">
         <h3>N レベル</h3>
         <div className="nlevel-control">
           <button className="stepper-btn" onClick={() => setNLevel(-1)} disabled={s.nLevel <= 1}>−</button>
@@ -132,7 +150,7 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
         </div>
       </section>
 
-      <section className="setup-section">
+      {s.mode === 'normal' && <section className="setup-section">
         <h3>問題数</h3>
         <div className="trial-count-control">
           <input
@@ -151,7 +169,7 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
           />
           <span>問</span>
         </div>
-      </section>
+      </section>}
 
       <section className="setup-section">
         <h3>回答受付時間の調整</h3>

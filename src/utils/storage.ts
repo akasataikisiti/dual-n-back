@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   responseWindowOffsetMs: 0,
   keyBindings: { position: 'a', shape: 's', color: 'd', sound: 'f' },
   showTimerBar: true,
+  mode: 'normal',
 };
 
 export function loadSettings(): GameSettings {

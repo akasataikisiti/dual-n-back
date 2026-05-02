@@ -15,7 +15,7 @@ interface Props {
 
 export function GameScreen({ settings, onComplete, onQuit }: Props) {
   const audio = useAudio();
-  const { phase, trialIndex, stimulusIndex, isWarmup, currentStimulus, userAnswered, score, feedback, progress, start, respond } =
+  const { phase, trialIndex, stimulusIndex, isWarmup, currentStimulus, userAnswered, score, errorCount, feedback, progress, start, respond } =
     useGame(settings, audio, onComplete);
   const [confirming, setConfirming] = useState(false);
   const canAnswer = phase === 'stimulus' && !isWarmup;
@@ -57,7 +57,16 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
     <div className="game-screen">
       <div className="game-header">
         <span className="game-trial">
-          {isWarmup ? `準備 ${stimulusIndex + 1} / ${settings.nLevel}` : `${trialIndex + 1} / ${settings.trialCount} 問`}
+          <span>
+            {isWarmup
+              ? `準備 ${stimulusIndex + 1} / ${settings.nLevel}`
+              : settings.mode === 'unlimited'
+                ? `${trialIndex + 1} 問目`
+                : `${trialIndex + 1} / ${settings.trialCount} 問`}
+          </span>
+          {settings.mode === 'unlimited' && !isWarmup && (
+            <span className="game-errors">ミス {errorCount}/5</span>
+          )}
         </span>
         <span className="game-nlevel">{settings.nLevel}-back</span>
         <span className="game-score">スコア: {score}</span>

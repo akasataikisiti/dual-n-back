@@ -12,12 +12,13 @@ interface GameState {
   userAnswered: MatchConfig;
   results: TrialRecord[];
   score: number;
+  errorCount: number;
   feedback: FeedbackMap | null;
 }
 
 type Action =
   | { type: 'START'; stimuli: Stimulus[] }
-  | { type: 'TO_BLANK'; record?: TrialRecord; scoreGain: number; feedback: FeedbackMap | null }
+  | { type: 'TO_BLANK'; record?: TrialRecord; scoreGain: number; feedback: FeedbackMap | null; errorDelta: number }
   | { type: 'TO_STIMULUS' }
   | { type: 'RESPOND'; matchType: MatchType }
   | { type: 'DONE' };
@@ -32,6 +33,7 @@ function reducer(state: GameState, action: Action): GameState {
         userAnswered: emptyMatch(),
         results: [],
         score: 0,
+        errorCount: 0,
         feedback: null,
       };
     case 'RESPOND':
@@ -43,6 +45,7 @@ function reducer(state: GameState, action: Action): GameState {
         phase: 'blank',
         feedback: action.feedback,
         score: state.score + action.scoreGain,
+        errorCount: state.errorCount + action.errorDelta,
         results: action.record ? [...state.results, action.record] : state.results,
       };
     case 'TO_STIMULUS':
@@ -67,6 +70,7 @@ const initialState: GameState = {
   userAnswered: emptyMatch(),
   results: [],
   score: 0,
+  errorCount: 0,
   feedback: null,
 };
 
@@ -93,7 +97,7 @@ export function useGame(
     if (s.phase === 'stimulus') {
       const stimIdx = s.stimulusIndex;
       if (stimIdx < cfg.nLevel) {
-        dispatch({ type: 'TO_BLANK', scoreGain: 0, feedback: null });
+        dispatch({ type: 'TO_BLANK', scoreGain: 0, feedback: null, errorDelta: 0 });
         return;
       }
 
@@ -101,13 +105,14 @@ export function useGame(
       const activeTypes = getActiveTypes(cfg.matchTypes);
       const feedback: FeedbackMap = {};
       let hits = 0;
+      let errorDelta = 0;
 
       activeTypes.forEach((t) => {
         const should = shouldMatch[t];
         const did = s.userAnswered[t];
         if (should && did) { feedback[t] = 'hit'; hits++; }
-        else if (!should && did) { feedback[t] = 'falseAlarm'; }
-        else if (should && !did) { feedback[t] = 'miss'; }
+        else if (!should && did) { feedback[t] = 'falseAlarm'; errorDelta++; }
+        else if (should && !did) { feedback[t] = 'miss'; errorDelta++; }
         else { feedback[t] = 'correctReject'; }
       });
 
@@ -120,11 +125,12 @@ export function useGame(
         feedback,
         scoreGain,
       };
-      dispatch({ type: 'TO_BLANK', record, scoreGain, feedback });
+      dispatch({ type: 'TO_BLANK', record, scoreGain, feedback, errorDelta });
 
     } else if (s.phase === 'blank') {
       const nextStimulusIndex = s.stimulusIndex + 1;
-      if (nextStimulusIndex >= s.stimuli.length) {
+      const isUnlimited = cfg.mode === 'unlimited';
+      if (nextStimulusIndex >= s.stimuli.length || (isUnlimited && s.errorCount >= 5)) {
         dispatch({ type: 'DONE' });
       } else {
         dispatch({ type: 'TO_STIMULUS' });
@@ -145,9 +151,10 @@ export function useGame(
         nLevel: cfg.nLevel,
         boardSize: cfg.boardSize,
         activeMatchTypes: getActiveTypes(cfg.matchTypes),
-        trialCount: cfg.trialCount,
+        trialCount: cfg.mode === 'unlimited' ? state.results.length : cfg.trialCount,
         score: state.score,
         records: state.results,
+        mode: cfg.mode,
       };
       onDoneRef.current(result);
       return;
@@ -183,7 +190,10 @@ export function useGame(
   }, [state.phase, state.stimulusIndex, state.stimuli.length]);
 
   const start = useCallback(() => {
-    const stimuli = generateStimuli(settings);
+    const stimuliSettings = settings.mode === 'unlimited'
+      ? { ...settings, trialCount: 500 }
+      : settings;
+    const stimuli = generateStimuli(stimuliSettings);
     dispatch({ type: 'START', stimuli });
     audioRef.current.playTileChange();
     if (settings.matchTypes.sound) {
@@ -209,6 +219,7 @@ export function useGame(
     userAnswered: state.userAnswered,
     results: state.results,
     score: state.score,
+    errorCount: state.errorCount,
     feedback: state.feedback,
     progress,
     start,
