@@ -25,6 +25,7 @@ interface Props {
 
 export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
   const [s, setS] = useState<GameSettings>(initial);
+  const [trialCountInput, setTrialCountInput] = useState(String(initial.trialCount));
   const [capturingKey, setCapturingKey] = useState<MatchType | null>(null);
   const capturingRef = useRef<MatchType | null>(null);
   capturingRef.current = capturingKey;
@@ -138,8 +139,14 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
             type="number"
             min={5}
             max={100}
-            value={s.trialCount}
-            onChange={e => setTrialCount(parseInt(e.target.value) || 20)}
+            value={trialCountInput}
+            onChange={e => setTrialCountInput(e.target.value)}
+            onBlur={() => {
+              const v = parseInt(trialCountInput, 10);
+              const clamped = isNaN(v) ? s.trialCount : Math.max(5, Math.min(100, v));
+              setTrialCount(clamped);
+              setTrialCountInput(String(clamped));
+            }}
             className="trial-input"
           />
           <span>問</span>
