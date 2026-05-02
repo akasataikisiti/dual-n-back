@@ -36,7 +36,8 @@ function buildTweetUrl(result: SessionResult): string {
   const isUnlimited = result.mode === 'unlimited';
   const modeLabel = isUnlimited ? 'アンリミット' : '通常';
   const trialLabel = isUnlimited ? `${result.trialCount}問クリア` : `${result.trialCount}問`;
-  const text = `Dual N-Back ${modeLabel} ${result.nLevel}-back ${trialLabel}！スコア: ${result.score} #DualNBack`;
+  const types = result.activeMatchTypes.map(t => LABELS[t]).join('・');
+  const text = `Dual N-Back ${modeLabel} ${result.nLevel}-back [${types}] ${trialLabel}！スコア: ${result.score} #DualNBack`;
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
 }
 
