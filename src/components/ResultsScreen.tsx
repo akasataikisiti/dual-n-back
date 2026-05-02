@@ -37,7 +37,14 @@ function buildTweetUrl(result: SessionResult): string {
   const modeLabel = isUnlimited ? 'アンリミット' : '通常';
   const trialLabel = isUnlimited ? `${result.trialCount}問クリア` : `${result.trialCount}問`;
   const types = result.activeMatchTypes.map(t => LABELS[t]).join('・');
-  const text = `Dual N-Back ${modeLabel} ${result.nLevel}-back [${types}] ${trialLabel}！スコア: ${result.score} #DualNBack`;
+  const text = [
+    `Dual N-Back ${modeLabel} ${result.nLevel}-back [${types}] ${trialLabel}！`,
+    `スコア: ${result.score}`,
+    '',
+    `#DualNBack #脳トレ`,
+    '',
+    'https://akasataikisiti.github.io/dual-n-back/',
+  ].join('\n');
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
 }
 
