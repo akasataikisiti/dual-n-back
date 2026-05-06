@@ -21,7 +21,7 @@ export function GameScreen({ settings, onComplete, onQuit }: Props) {
   const canAnswer = phase === 'stimulus' && !isWarmup;
 
   const activeCount = getActiveTypes(settings.matchTypes).length;
-  const timings = getTimings(activeCount, settings.responseWindowOffsetMs);
+  const timings = getTimings(activeCount, settings.responseWindowOffsetMs, settings.matchTypes.sound);
 
   useEffect(() => {
     start();

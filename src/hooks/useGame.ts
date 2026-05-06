@@ -163,7 +163,8 @@ export function useGame(
 
     const timings = getTimings(
       getActiveTypes(settingsRef.current.matchTypes).length,
-      settingsRef.current.responseWindowOffsetMs
+      settingsRef.current.responseWindowOffsetMs,
+      settingsRef.current.matchTypes.sound
     );
     const duration = state.phase === 'stimulus' ? timings.stimulusDuration : timings.blankDuration;
     const start = performance.now();

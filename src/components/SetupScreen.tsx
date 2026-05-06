@@ -31,7 +31,7 @@ export function SetupScreen({ settings: initial, onStart, onHistory }: Props) {
   capturingRef.current = capturingKey;
 
   const activeTypes = getActiveTypes(s.matchTypes);
-  const timings = getTimings(activeTypes.length, s.responseWindowOffsetMs);
+  const timings = getTimings(activeTypes.length, s.responseWindowOffsetMs, s.matchTypes.sound);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
